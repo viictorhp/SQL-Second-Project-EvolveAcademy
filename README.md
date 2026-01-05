@@ -6,7 +6,9 @@ Proyecto de MySQL realizado en MySQL Workbench.
 Base de datos utilizada en este proyecto extraída de Kaggle:
 [dataset](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset)
 ## Descripción
-Proyecto completo de ingeniería de datos y análisis exploratorio (EDA) utilizando MySQL. Se ha transformado un dataset crudo en un modelo de estrella (Star Schema) normalizado.
+Este proyecto consiste en el diseño, implementación y explotación de una base de datos relacional en **MySQL** para analizar un dataset musical de Spotify con más de 114.000 registros.
+
+El objetivo principal ha sido transformar datos crudos en información de valor siguiendo un flujo de trabajo profesional, desde la obtención y limpieza, pasando por el modelado de datos, hasta el análisis avanzado (EDA) para sacar algunas conclusiones relacionadas con el dataset.
 
 ## Estructura del Proyecto
 - 01_spotify_schema.sql - Creación de la base de datos, creación e la tabla principal (fact_table) y de las 8 tablas de dimensiones (dim_table).
