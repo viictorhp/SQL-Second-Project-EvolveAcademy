@@ -1,6 +1,9 @@
 -- ---------------------------------------------------------
 -- PASO 1: CREACIÓN DE BASE DE DATOS Y TABLA STAGING
 -- ---------------------------------------------------------
+DROP DATABASE IF EXISTS proyecto_spotify;
+
+
 CREATE DATABASE IF NOT EXISTS proyecto_spotify;
 USE proyecto_spotify;
 
@@ -55,12 +58,11 @@ CREATE TABLE IF NOT EXISTS dim_genre (
     genre_name VARCHAR(255) UNIQUE NOT NULL
 ) COMMENT 'Clasificación de géneros musicales';
 
--- Dimensión 4: Información de la Pista (Nombre y si contiene contenido explícito)
+-- Dimensión 4: Información de la Pista
 CREATE TABLE IF NOT EXISTS dim_track_info (
     track_db_id INT AUTO_INCREMENT PRIMARY KEY,
     track_spotify_id VARCHAR(50) UNIQUE, -- El ID original de Spotify
-    track_name TEXT,
-    is_explicit BOOLEAN -- True (sí contiene contenido explícito) o False (no contiene contenido explícito)
+    track_name TEXT
 ) COMMENT 'Información descriptiva de la canción';
 
 -- Dimensión 5: Tonalidad (Key) - Tabla estática explicativa
@@ -85,7 +87,7 @@ CREATE TABLE IF NOT EXISTS dim_time_signature (
 -- Dimensión 8: Contenido Explícito
 CREATE TABLE IF NOT EXISTS dim_explicit (
     explicit_id INT AUTO_INCREMENT PRIMARY KEY,
-    explicit_val VARCHAR(10) UNIQUE -- 'True' o 'False'
+    explicit_val VARCHAR(10) UNIQUE -- True (sí contiene contenido explícito) o False (no contiene contenido explícito)
 ) COMMENT 'Indica si la canción tiene contenido explícito';
 
 -- ---------------------------------------------------------
@@ -120,6 +122,7 @@ CREATE TABLE IF NOT EXISTS fact_spotify_metrics (
     tempo DOUBLE,
     
     -- DEFINICIÓN DE RELACIONES (Constraints)
+		-- Establezco las reglas (los enlaces). Vínculo estricto entre la tabla de hechos y las tablas de dimensiones.
     CONSTRAINT fk_artist FOREIGN KEY (artist_id) REFERENCES dim_artist(artist_id),
     CONSTRAINT fk_album FOREIGN KEY (album_id) REFERENCES dim_album(album_id),
     CONSTRAINT fk_genre FOREIGN KEY (genre_id) REFERENCES dim_genre(genre_id),

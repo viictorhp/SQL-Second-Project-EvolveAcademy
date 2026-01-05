@@ -34,7 +34,7 @@ SELECT DISTINCT popularity,
         WHEN popularity >= 80 THEN 'Top Hit'
         WHEN popularity BETWEEN 50 AND 79 THEN 'Popular'
         WHEN popularity BETWEEN 20 AND 49 THEN 'Normal'
-        ELSE 'Niche / Low'
+        ELSE 'Poco conocido'
     END
 FROM staging_spotify
 ORDER BY popularity;
@@ -44,7 +44,9 @@ ALTER TABLE fact_spotify_metrics ADD COLUMN popularity_id INT;
 
 -- 1.3 Actualizo la Fact Table cruzando los datos
 UPDATE fact_spotify_metrics f
-JOIN dim_popularity p ON f.popularity = p.score
+JOIN dim_track_info dt ON f.track_db_id = dt.track_db_id
+JOIN staging_spotify s ON dt.track_spotify_id = s.track_id
+JOIN dim_popularity p ON s.popularity = p.score
 SET f.popularity_id = p.popularity_id;
 
 -- 1.4 Limpio la columna "popularity" de la fact_table
@@ -56,9 +58,7 @@ ADD CONSTRAINT fk_popularity FOREIGN KEY (popularity_id) REFERENCES dim_populari
 
 SELECT * FROM dim_popularity;
 
--- 2. Añado nuevas variables a la tabla "dim_track_info" y elimino la variable "is_explicit" porque ya tenemos esta variable en una tabla de dimensiones aparte.
-ALTER TABLE dim_track_info DROP COLUMN is_explicit;
-
+-- 2. Añado nuevas variables a la tabla "dim_track_info".
 -- Voy a añadir las variables "duration_ms" - duración de la canción en milisegundos, "danceability" - Valor entre 0 y 1 que mide cómo de óptima es una cacnión para que se pueda bailar y "energy" - Valor entre 0 y 1 que mide la intensidad y actividad de una canción.
 ALTER TABLE dim_track_info 
 ADD COLUMN duration_ms INT,
@@ -90,10 +90,10 @@ ADD CONSTRAINT chk_popularity_range CHECK (score BETWEEN 0 AND 100);
 -- 2. Asegurar que la duración nunca sea negativa
 ALTER TABLE dim_track_info
 ADD CONSTRAINT chk_duration_positive CHECK (duration_ms >= 0);
--- 3. Asegurar que danceability es un ratio entre 0 y 1 (o un poco más según la escala, pero normalmente es 0-1)
+-- 3. Asegurar que "danceability" es un ratio entre 0 y 1 (o un poco más según la escala, pero normalmente es 0-1)
 ALTER TABLE dim_track_info
 ADD CONSTRAINT chk_danceability_valid CHECK (danceability BETWEEN 0 AND 1);
--- 4. Asegurar que energy es un ratio entre 0 y 1
+-- 4. Asegurar que "energy" es un ratio entre 0 y 1
 ALTER TABLE dim_track_info
 ADD CONSTRAINT chk_energy_valid CHECK (energy BETWEEN 0 AND 1);
 
@@ -293,7 +293,7 @@ BEGIN
     IF bpm < 100 THEN
         SET categoria = 'Lento / Relax';
     ELSEIF bpm BETWEEN 100 AND 130 THEN
-        SET categoria = 'Moderado / Pop';
+        SET categoria = 'Moderado';
     ELSE
         SET categoria = 'Rápido / Intenso';
     END IF;
@@ -458,7 +458,7 @@ ORDER BY
     cantidad_canciones DESC;
 -- Podemos observar que las canciones clasificadas como 'Moderado / Pop' tienen una mayor probabilidad de ser "Top Hits" si su duración ronda los 3 minutos y medio, mientras que las canciones "Lentas" tienden a ser menos bailables y populares.
 
--- 3. Reporte de Géneros Rentables
+-- 3. Reporte de Géneros Rentables.
 SELECT 
     dg.genre_name,
     COUNT(f.track_db_id) AS volumen_mercado, -- Cuántas canciones hay
@@ -472,9 +472,9 @@ GROUP BY dg.genre_name
 HAVING volumen_mercado > 100 -- Nos centramos en los géneros con gran volumen de canciones
 ORDER BY tasa_de_exito DESC
 LIMIT 10;
--- El género rock y latino presenta la mayor rentabilidad con una tasa de éxito de casi el 10%, lo que sugiere que invertir en producciones de este estilo tiene un menor riesgo.
+-- El género rock y latino presentan la mayor rentabilidad con una tasa de éxito de casi el 10%, lo que sugiere que invertir en producciones de este estilo tiene un menor riesgo.
 
--- 4. Reporte de las canciones 'Ruidosas' y 'Populares' (Top Hit), mostrando su duración formateada, nombre del artista y género
+-- 4. Reporte de las canciones "Ruidosas" y "Populares" (Top Hit), mostrando su duración formateada, nombre del artista y género.
 SELECT 
     dt.track_name,
     da.artist_name,
@@ -493,7 +493,7 @@ WHERE
     AND f.loudness > -5 -- Filtramos por volumen alto
 ORDER BY f.loudness DESC -- Ordenamos por las canciones más ruidosas primero.
 LIMIT 20;
--- Vemos que aparecen algunas canciones muy famosas en los últimos años como "PUNTO 40" y "Levitating"
+-- Vemos que aparecen algunas canciones muy famosas en los últimos años como "PUNTO 40" y "Levitating".
 
 
 

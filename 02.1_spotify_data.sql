@@ -1,6 +1,5 @@
 -- Este script llenará primero las 8 dimensiones y, finalmente, cruzará todo para llenar la tabla de hechos.
 USE proyecto_spotify;
-
 -- ----------------------------------------------------------------------------
 -- A) AÑADIMOS DATOS A LAS TABLAS DE DIMENSIONES (Datos únicos)
 -- ----------------------------------------------------------------------------
@@ -37,7 +36,7 @@ ORDER BY key_val;
 
 -- 6. Mode (Modalidad)
 INSERT INTO dim_mode (mode_id, mode_desc)
-SELECT DISTINCT mode_val, CASE WHEN mode_val = 1 THEN 'Major' ELSE 'Minor' END 
+SELECT DISTINCT mode_val, CASE WHEN mode_val = 1 THEN 'Mayor' ELSE 'Menor' END 
 FROM staging_spotify;
 
 -- 7. Time Signature (Compás)
@@ -83,16 +82,40 @@ SELECT
     s.valence,
     s.tempo
 FROM staging_spotify s
--- Hacemos INNER JOIN con las dimensiones para obtener los IDs numéricos (Foreign Keys)
+-- Hacemos INNER JOIN con las dimensiones para obtener los IDs numéricos (Foreign Keys).
+	-- Si una canción tiene un artista que no está en nuestra lista de artistas, esa canción se descarta para mantener la calidad. Deben existir todos los datos.
 INNER JOIN dim_artist da ON s.artists = da.artist_name
 INNER JOIN dim_album dal ON s.album_name = dal.album_name
 INNER JOIN dim_genre dg ON s.track_genre = dg.genre_name
 INNER JOIN dim_track_info dt ON s.track_id = dt.track_spotify_id
 INNER JOIN dim_explicit de ON s.explicit = de.explicit_val
--- Usamos LEFT JOIN en claves numéricas por si acaso algún dato vino nulo (aunque no debería)
+-- Usamos LEFT JOIN en claves numéricas por si acaso algún dato vino nulo (aunque no debería).
+	-- Puede ser que no tengamos algunos de estos datos para ciertas canciones, por ello, haciendo uso del LEFT JOIN este campo se quedará como NULL.
 LEFT JOIN dim_key dk ON s.key_val = dk.key_id
 LEFT JOIN dim_mode dm ON s.mode_val = dm.mode_id
 LEFT JOIN dim_time_signature dts ON s.time_signature = dts.time_sig_id;
 
 -- Verificación final
 SELECT COUNT(*) FROM fact_spotify_metrics;
+
+-- Con todos estos pasos hemos conseguido una normalización de los datos, es decir; 
+	-- Hemos eliminado los duplicados, al crear distintas tablas de dimensiones para los distintos conjuntos de datos (optimización y menos almacenamiento de la bbdd).
+    -- Con el modelo normalizado, solo necesitas actualizar un registro en una de las tablas para que automáticamente, todas las canciones asociadas reflejen el cambio.
+    -- Un atributo depende unicamente de su clave primaria (PK).
+    -- Transformamos las cadenas de texto en operaciones numéricas, para que así, el modelo sea más rápido y consistente.
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+

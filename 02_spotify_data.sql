@@ -5,7 +5,7 @@ USE proyecto_spotify;
 -- 1. Limpiar la tabla por si acaso
 TRUNCATE TABLE staging_spotify;
 
--- 2. Cargar con salto de línea '\n'
+-- 2. Cargar con salto de línea "\n"
 	-- Cargamos todos los datos del dataset extraído de Kaggle en formato "csv" y los añadimos a la tabla "staging_spotify"
 LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/dataset.csv' 
 INTO TABLE staging_spotify 
