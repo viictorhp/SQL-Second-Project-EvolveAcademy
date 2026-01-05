@@ -11,8 +11,8 @@ Este proyecto consiste en el diseño, implementación y explotación de una base
 El objetivo principal ha sido transformar datos crudos en información de valor siguiendo un flujo de trabajo profesional, desde la obtención y limpieza, pasando por el modelado de datos, hasta el análisis avanzado (EDA) para sacar algunas conclusiones relacionadas con el dataset.
 
 ## Estructura del Proyecto
-- 01_spotify_schema.sql - Creación de la base de datos, creación e la tabla principal (fact_table) y de las 8 tablas de dimensiones (dim_table).
-- 02_spotify_data.sql y 02.1_spotify_data.sql  — Carga de datos y limpieza. Establecimiento de relaciones PK (Primary Key), FK (Foreign Key) y constraints.
+- 01_spotify_schema.sql - Creación de la base de datos, creación de la tabla principal (fact_table) y de las 8 tablas de dimensiones (dim_table).
+- 02_spotify_data.sql y 02.1_spotify_data.sql  — Carga de datos y limpieza. Establecimiento de relaciones PK (Primary Key), FK (Foreign Key) y Constraints.
 - 03_eda.sql — Consultas, funciones, vistas y conclusiones.
 
 ## Diagrama E-R del modelo
