@@ -20,4 +20,5 @@ El objetivo principal ha sido transformar datos crudos en información de valor 
 
 En el diagrama Entidad - Relación de este proyecto, se puede ver en forma de esquema de estrella; 
 la tabla de hechos (fact_table), en mi caso fact_spotify_metrics, que es la tabla núcleo de mi proyecto, la cuál cuenta con todas las Foreign Keys y que "une" todas las tablas de dimensiones (dim_table) que aportan toda la información adicional.
-También se puede ver la tabla usada como puente, que contiene todos los datos en crudo (staging_spotify).
+
+También se puede ver la tabla usada como puente, que contiene todos los datos en crudo (staging_spotify) y las vistas usadas y creadas durante la realización del proyecto.
